@@ -8,8 +8,11 @@ public class HandCrank : MonoBehaviour
 {
     public MarbleMachine MarbleMachine;
     public Renderer GrabbingHandModel;
+    public GameObject Handle;
 
     bool isGrabbed = false;
+    float previousAngle = 0;
+    float torqueRatio = 10;
     float roationRadius = 0.5f;
     Hand grabbingHand;
 
@@ -48,7 +51,10 @@ public class HandCrank : MonoBehaviour
             {
                 isGrabbed = false;
             }*/
-            HelperFunctions.Log(GetComponent<CircularDrive>().outAngle);
+            float angle = GetComponent<CircularDrive>().outAngle;
+            MarbleMachine.InputTorque((angle - previousAngle)*torqueRatio);
+            HelperFunctions.Log(angle, angle - previousAngle);
+            previousAngle = angle;
         }
     }
 

@@ -8,7 +8,7 @@ public class MarbleMachine : MonoBehaviour
     public float Position { get { return position; } } // In degrees
     float position = 0;
     float inputTorque = 0;
-    float speed = 30;
+    float speed = 0;
     float flywheelSpeed = 0;
     float frictionConstant = 1f;
     bool flywheelIsEngaged = true;
@@ -52,7 +52,7 @@ public class MarbleMachine : MonoBehaviour
     }
 
     // Received input torque from crank or pedal etc.
-    void InputTorque(float deltaAngle)
+    public void InputTorque(float deltaAngle)
     {
         //Debug.Log(deltaAngle.ToString());
         inputTorque = Mathf.Max(deltaAngle, 10*Time.deltaTime);

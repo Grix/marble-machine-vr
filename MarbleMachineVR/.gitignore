@@ -61,5 +61,5 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-# Unity extensions
-SteamVR*/
+#SteamVR extension, can be downloaded from unity app store
+SteamVR/

@@ -6,6 +6,7 @@ public class MarbleMachineWheel : MonoBehaviour
 {
     public MarbleMachine MarbleMachine;
     public float GearRatio = 1;
+    public float ZAngle = 90;   
 
     // Start is called before the first frame update
     void Start()
@@ -16,6 +17,6 @@ public class MarbleMachineWheel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.localRotation = Quaternion.Euler((MarbleMachine.Position * GearRatio) % 360, 0, 90);
+        transform.localRotation = Quaternion.Euler((MarbleMachine.Position * GearRatio) % 360, 0, ZAngle);
     }
 }
