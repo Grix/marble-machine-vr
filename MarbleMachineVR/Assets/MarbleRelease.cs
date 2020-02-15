@@ -6,6 +6,7 @@ using UnityEngine;
 public class MarbleRelease : MonoBehaviour
 {
     public TriggerAssembly TriggerAssembly;
+    public Transform MarbleSpawnPoint;
     public GameObject Marble;
     //public Quaternion ReleasePosition = Quaternion.Euler(transform.position.eulerAngles.x, transform.position.eulerAngles.y-0.2, transform.position.eulerAngles.z);
     
@@ -52,11 +53,7 @@ public class MarbleRelease : MonoBehaviour
     {
         if (marbleIsLoaded)
         {
-            Instantiate(Marble, 
-                        new Vector3(transform.position.x, 
-                                    transform.position.y-0.04f, 
-                                    transform.position.z), 
-                         Quaternion.identity);
+            Instantiate(Marble, MarbleSpawnPoint.position, Quaternion.identity);
             //MarbleIsLoaded = false;
 
             HelperFunctions.Log("hit", DateTime.Now - lastHitTime);

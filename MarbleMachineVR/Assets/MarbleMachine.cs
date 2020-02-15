@@ -10,12 +10,13 @@ public class MarbleMachine : MonoBehaviour
     float inputTorque = 0;
     float speed = 0;
     float flywheelSpeed = 0;
-    float frictionConstant = 1f;
+    float frictionConstant = 0.2f;
     bool flywheelIsEngaged = true;
     float mutePosition = 0; // 0: fully unmuted, 1: fully muted
 
-    const int NumberOfBars = 16;
+    const int NumBars = 16;
     const float FlywheelInertiaRatio = 10;
+    public const int NumChannels = 38;
 
     //List<InstrumentChannel> instrumentChannels = new List<InstrumentChannel>();
 
@@ -39,7 +40,7 @@ public class MarbleMachine : MonoBehaviour
 
     void LoadTestPattern()
     {
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < NumChannels; i++)
             PinPositions.Add(new List<float>());
         for (int i = 0; i < 360; i += 8)
             PinPositions[0].Add(i);
@@ -47,6 +48,14 @@ public class MarbleMachine : MonoBehaviour
             PinPositions[1].Add(i);
         for (int i = 0; i < 360; i += 4)
             PinPositions[2].Add(i);
+        for (int i = 0; i < 360; i += 32)
+            PinPositions[3].Add(i);
+        for (int i = 8; i < 360; i += 32)
+            PinPositions[4].Add(i);
+        for (int i = 16; i < 360; i += 32)
+            PinPositions[5].Add(i);
+        for (int i = 24; i < 360; i += 32)
+            PinPositions[6].Add(i);
 
         PinPositionsChanged?.Invoke(this, new EventArgs());
     }
@@ -56,6 +65,13 @@ public class MarbleMachine : MonoBehaviour
     {
         //Debug.Log(deltaAngle.ToString());
         inputTorque = Mathf.Max(deltaAngle, 10*Time.deltaTime);
+    }
+
+    public void InputTorqueWithDelta(float inputDeltaSpeed)
+    {
+        inputTorque = (inputDeltaSpeed - speed) * Time.deltaTime * 1000;
+
+        HelperFunctions.Log(inputDeltaSpeed, speed, inputTorque);
     }
     
     void FixedUpdate()
@@ -84,6 +100,16 @@ public class MarbleMachine : MonoBehaviour
 
         if (inputTorque != 0)
             inputTorque = 0;
+    }
+
+    public void LoadProgramming(List<List<float>> pinPositions)
+    {
+        for (int i = 0; i < pinPositions.Count; i++)
+        {
+            PinPositions[i] = pinPositions[i];
+        }
+        // todo error checking etc, do the pin positions fit in the programming plates?
+        PinPositionsChanged?.Invoke(this, new EventArgs());
     }
     
 

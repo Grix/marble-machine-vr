@@ -6,6 +6,11 @@ using UnityEngine;
 public class MarblePath : MonoBehaviour
 {
     public BezierSpline Path;
+    public bool IsTiedToMarbleMachineSpeed = false;
+    public float SpeedFactor = 1;
+    public MarbleMachine MarbleMachine;
+
+    float lastMarbleMachinePosition = 0;
 
     List<TransportedMarble> marblesUnderTransport = new List<TransportedMarble>();
 
@@ -32,7 +37,7 @@ public class MarblePath : MonoBehaviour
         marblesUnderTransport.Add(new TransportedMarble
         {
             Marble = gameObject,
-            Speed = 1 // Todo get from rigidbody
+            Speed = 1 // Todo get from rigidbody or marble machine
         });
     }
 
@@ -49,9 +54,15 @@ public class MarblePath : MonoBehaviour
             {
                 float lastYPosition = marble.Marble.transform.position.y;
                 marble.Marble.transform.position = Path.GetPoint(marble.Position);
-                marble.Speed += (-0.05f + lastYPosition - marble.Marble.transform.position.y) * Time.deltaTime;
+                if (IsTiedToMarbleMachineSpeed)
+                    marble.Speed = (Math.Abs(MarbleMachine.Position - lastMarbleMachinePosition) % 360) * SpeedFactor;
+                else
+                    marble.Speed += (-0.05f + lastYPosition - marble.Marble.transform.position.y) * Time.deltaTime;
             }
         }
+
+        if (MarbleMachine != null)
+            lastMarbleMachinePosition = MarbleMachine.Position;
     }
 
     private void FinishMarbleTransport(TransportedMarble marble)

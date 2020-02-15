@@ -10,6 +10,8 @@ public class TriggerAssembly : MonoBehaviour
     public Transform Trigger;
     public int Channel = 0;
 
+    Vector3 baseTriggerPosition;
+    Vector3 baseRegistratorPosition;
     float previousPosition = 0;
     float triggerPosition = 0; // 0: fully inactive, 1: fully triggered
     float mutePosition = 0; // 0: fully unmuted, 1: fully muted
@@ -55,8 +57,8 @@ public class TriggerAssembly : MonoBehaviour
             return;
 
         // Hitting pin, so move transforms
-        Registrator.localPosition = new Vector3(0, 0, triggerPosition / 100);
-        Trigger.localPosition = new Vector3(0, 0, ActualTriggerPosition / 100);
+        Registrator.localPosition = new Vector3(baseRegistratorPosition.x, baseRegistratorPosition.y, baseRegistratorPosition.z + triggerPosition / 100);
+        Trigger.localPosition = new Vector3(baseTriggerPosition.x, baseTriggerPosition.y, baseTriggerPosition.z + ActualTriggerPosition / 100);
 
         lastPosition = position;
     }
@@ -64,6 +66,8 @@ public class TriggerAssembly : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        baseTriggerPosition = Trigger.localPosition;
+        baseRegistratorPosition = Registrator.localPosition;
         MarbleMachine.PinPositionsChanged += delegate { pinPositions = MarbleMachine.PinPositions[Channel]; };
         MarbleMachine.MutePositionChanged += delegate { UpdateMutePosition(); };
     }

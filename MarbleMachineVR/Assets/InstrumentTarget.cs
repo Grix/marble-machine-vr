@@ -7,6 +7,7 @@ public class InstrumentTarget : MonoBehaviour
 {
     public float Pitch;
     public GameObject Marble;
+    public Bounce PivotArm;
 
     DateTime lastHitTime;
 
@@ -27,6 +28,7 @@ public class InstrumentTarget : MonoBehaviour
         if (collision.gameObject.name.StartsWith("Marble"))
         {
             GetComponent<AudioSource>().Play();
+            PivotArm?.DoBounce();
             //HelperFunctions.Log("hit", DateTime.Now - lastHitTime);
             //lastHitTime = DateTime.Now;
         }
