@@ -8,15 +8,15 @@ public class MarbleMachine : MonoBehaviour
     public float Position { get { return position; } } // In degrees
     float position = 0;
     float inputTorque = 0;
-    float speed = 0;
+    float speed = 12;
     float flywheelSpeed = 0;
-    float frictionConstant = 0.2f;
+    float frictionConstant = 0f;//0.2f;
     bool flywheelIsEngaged = true;
     float mutePosition = 0; // 0: fully unmuted, 1: fully muted
 
-    const int NumBars = 16;
-    const float FlywheelInertiaRatio = 10;
-    public const int NumChannels = 38;
+    float FlywheelInertiaRatio = 10;
+    public int NumBars = 16;
+    public int NumChannels = 38;
 
     //List<InstrumentChannel> instrumentChannels = new List<InstrumentChannel>();
 
@@ -35,29 +35,28 @@ public class MarbleMachine : MonoBehaviour
 
     void Start()
     {
+        for (int i = 0; i < NumChannels; i++)
+            PinPositions.Add(new List<float>());
+
         Invoke("LoadTestPattern", 1);
+        Invoke("LoadMidiFile", 2);
     }
 
     void LoadTestPattern()
     {
         for (int i = 0; i < NumChannels; i++)
             PinPositions.Add(new List<float>());
-        for (int i = 0; i < 360; i += 8)
-            PinPositions[0].Add(i);
-        for (int i = 8; i < 360; i += 16)
-            PinPositions[1].Add(i);
-        for (int i = 0; i < 360; i += 4)
-            PinPositions[2].Add(i);
-        for (int i = 0; i < 360; i += 32)
-            PinPositions[3].Add(i);
-        for (int i = 8; i < 360; i += 32)
-            PinPositions[4].Add(i);
-        for (int i = 16; i < 360; i += 32)
-            PinPositions[5].Add(i);
-        for (int i = 24; i < 360; i += 32)
-            PinPositions[6].Add(i);
+        /*for (int i = 0; i < 360; i += 8)*/
+        for (int i = 0; i < NumChannels; i++)
+            PinPositions[i].Add(10+i);
 
-        PinPositionsChanged?.Invoke(this, new EventArgs());
+        TriggerPinPositionsChangedEvent();
+    }
+
+    void LoadMidiFile()
+    {
+        new MidiLoader(this).OpenMidiFileBrowser();
+
     }
 
     // Received input torque from crank or pedal etc.
@@ -73,7 +72,12 @@ public class MarbleMachine : MonoBehaviour
 
         HelperFunctions.Log(inputDeltaSpeed, speed, inputTorque);
     }
-    
+
+    public void TriggerPinPositionsChangedEvent()
+    {
+        PinPositionsChanged?.Invoke(this, new EventArgs());
+    }
+
     void FixedUpdate()
     {
         UpdateWheelPosition();
@@ -104,12 +108,13 @@ public class MarbleMachine : MonoBehaviour
 
     public void LoadProgramming(List<List<float>> pinPositions)
     {
-        for (int i = 0; i < pinPositions.Count; i++)
+        PinPositions.Clear();
+        for (int i = 0; i < pinPositions.Count || i < NumChannels; i++)
         {
-            PinPositions[i] = pinPositions[i];
+            PinPositions.Add(pinPositions[i]);
         }
         // todo error checking etc, do the pin positions fit in the programming plates?
-        PinPositionsChanged?.Invoke(this, new EventArgs());
+        TriggerPinPositionsChangedEvent();
     }
     
 

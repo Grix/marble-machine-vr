@@ -9,23 +9,16 @@ using Melanchall.DryWetMidi.Interaction;
 
 
 // Handles loading a song to the programming plates from a MIDI file.
-public class MidiLoader : MonoBehaviour
+public class MidiLoader
 {
-    public MarbleMachine MarbleMachine;
+    MarbleMachine marbleMachine;
 
-    // Start is called before the first frame update
-    void Start()
+    public MidiLoader(MarbleMachine marbleMachine)
     {
-        
+        this.marbleMachine = marbleMachine;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void OpenMidiFileBrowser()
+    public void OpenMidiFileBrowser()
     {
         FileBrowser.ShowLoadDialog(OnMidiFileSelected, null);
     }
@@ -38,7 +31,7 @@ public class MidiLoader : MonoBehaviour
     void LoadFromMidiFile(string filePath)
     {
         var pinPositions = new List<List<float>>();
-        for (int i = 0; i < MarbleMachine.NumChannels; i++)
+        for (int i = 0; i < marbleMachine.NumChannels; i++)
         {
             pinPositions.Add(new List<float>());
         }
@@ -53,7 +46,11 @@ public class MidiLoader : MonoBehaviour
                 foreach (var note in notes)
                 {
                     var musicalTime = TimeConverter.ConvertTo<BarBeatFractionTimeSpan>(note.Time, tempoMap);
-                    pinPositions[note.NoteNumber - 60].Add((float)( musicalTime.Bars / 16 * 360 + musicalTime.Beats / 4 * (360/16) ));
+                    var channel = note.NoteNumber - 48;
+                    HelperFunctions.Log(channel, (float)(musicalTime.Bars / (float)marbleMachine.NumBars * 360f + musicalTime.Beats / 4f * (360 / (float)marbleMachine.NumBars)));
+                    if (channel > pinPositions.Count || channel < 0)
+                        continue;
+                    pinPositions[channel].Add((float)( musicalTime.Bars / (float)marbleMachine.NumBars * 360f + musicalTime.Beats / 4f * (360 / (float)marbleMachine.NumBars) ));
                 }
             }
             /*using (var timedEventManager = new TimedEventsManager(trackChunk.Events))
@@ -67,6 +64,7 @@ public class MidiLoader : MonoBehaviour
                 }
             }*/
         }
-        
+
+        marbleMachine.LoadProgramming(pinPositions);
     }
 }

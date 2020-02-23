@@ -12,13 +12,13 @@ public class TriggerAssembly : MonoBehaviour
 
     Vector3 baseTriggerPosition;
     Vector3 baseRegistratorPosition;
-    float previousPosition = 0;
     float triggerPosition = 0; // 0: fully inactive, 1: fully triggered
     float mutePosition = 0; // 0: fully unmuted, 1: fully muted
 
     List<float> pinPositions;
     float lastPosition = 0;
     int nextPinIndex = 0;
+    float registratorTravel = 2;
 
     bool IsMuted { get { return mutePosition > 0.5; } }
     public float ActualTriggerPosition { get { return IsMuted ? 0 : triggerPosition; } }
@@ -36,24 +36,38 @@ public class TriggerAssembly : MonoBehaviour
 
         // Calculate if trigger is hitting pin
         float position = MarbleMachine.Position;
-        triggerPosition = Mathf.Max(position - pinPositions[nextPinIndex] + 1, 0);
+        //if (pinPositions[nextPinIndex] < 3 && position > pinPositions[nextPinIndex])
+        //position -= 360;
 
-        while (triggerPosition > 1)
+        float bestTriggerPosition = 0;
+        foreach (float pinPosition in pinPositions)
         {
-            if (nextPinIndex == 0 && position > pinPositions[nextPinIndex])
-            {
-                position -= 360;
-                triggerPosition = Mathf.Max(position - pinPositions[nextPinIndex] + 1, 0);
-                nextPinIndex = (nextPinIndex + 1) % pinPositions.Count;
-            }
-            else
-            {
-                nextPinIndex = (nextPinIndex + 1) % pinPositions.Count;
-                triggerPosition = Mathf.Max(position - pinPositions[nextPinIndex] + 1, 0);
-            }
+            float fixedPinPosition = pinPosition;
+            if (pinPosition < registratorTravel && position > (360 - registratorTravel))
+                fixedPinPosition += 360;
+
+            var thisPinTriggerPosition = Mathf.Max(position - fixedPinPosition + registratorTravel, 0);
+            if (thisPinTriggerPosition < registratorTravel && thisPinTriggerPosition > bestTriggerPosition)
+                bestTriggerPosition = thisPinTriggerPosition;
+            else if (bestTriggerPosition > 0)
+                break;
         }
 
-        if (triggerPosition == 0 && previousPosition == 0)
+        triggerPosition = bestTriggerPosition;
+
+        //triggerPosition = Mathf.Max(position - pinPositions[nextPinIndex] + 2, 0);
+
+        //if (pinPositions.Count > 1)
+        //{
+            //if (triggerPosition > 2)
+            //{
+             //   nextPinIndex = (nextPinIndex + 1) % pinPositions.Count;
+             //   triggerPosition = Mathf.Max(position - pinPositions[nextPinIndex] + 2, 0);
+            //}
+        //}
+
+
+        if (triggerPosition == 0 && lastPosition == 0)
             return;
 
         // Hitting pin, so move transforms

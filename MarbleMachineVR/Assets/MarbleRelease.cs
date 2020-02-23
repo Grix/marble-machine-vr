@@ -56,7 +56,7 @@ public class MarbleRelease : MonoBehaviour
             Instantiate(Marble, MarbleSpawnPoint.position, Quaternion.identity);
             //MarbleIsLoaded = false;
 
-            HelperFunctions.Log("hit", DateTime.Now - lastHitTime);
+            //HelperFunctions.Log("hit", DateTime.Now - lastHitTime);
             lastHitTime = DateTime.Now;
         }
     }
