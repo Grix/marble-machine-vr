@@ -17,6 +17,7 @@ public class Lever : MonoBehaviour
     float lastDriveAngle = 0;
     float maxAngle = 45;
     float minAngle = 0;
+    bool firstRun = true;
 
     // Start is called before the first frame update
     void Start()
@@ -33,11 +34,12 @@ public class Lever : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Drive.outAngle != lastDriveAngle)
+        if (Drive.outAngle != lastDriveAngle || firstRun)
         {
             lastDriveAngle = Drive.outAngle;
             DrivePosition = (Drive.outAngle - minAngle) / (maxAngle - minAngle);
             PositionChanged?.Invoke(this, new EventArgs());
+            firstRun = false;
         }
     }
 

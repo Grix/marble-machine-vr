@@ -23,9 +23,14 @@ public class TriggerAssembly : MonoBehaviour
     bool IsMuted { get { return mutePosition > 0.5; } }
     public float ActualTriggerPosition { get { return IsMuted ? 0 : triggerPosition; } }
 
+    public void SetMutePosition(float position)
+    {
+        mutePosition = Mathf.Clamp(position, 0, 1);
+        UpdateMutePosition();
+    }
+
     private void UpdateMutePosition()
     {
-        mutePosition = MarbleMachine.MutePosition;
         Trigger.localRotation = Quaternion.Euler(mutePosition * 10, 0, 0);
     }
 
@@ -84,12 +89,15 @@ public class TriggerAssembly : MonoBehaviour
         baseRegistratorPosition = Registrator.localPosition;
         MarbleMachine.PinPositionsChanged += delegate { pinPositions = MarbleMachine.PinPositions[Channel]; };
         MarbleMachine.MutePositionChanged += delegate { UpdateMutePosition(); };
+
+        Registrator.localPosition = new Vector3(baseRegistratorPosition.x, baseRegistratorPosition.y, baseRegistratorPosition.z + triggerPosition / 100);
+        Trigger.localPosition = new Vector3(baseTriggerPosition.x, baseTriggerPosition.y, baseTriggerPosition.z + ActualTriggerPosition / 100);
     }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateMutePosition();
+        //UpdateMutePosition();
     }
 
     void FixedUpdate()

@@ -24,14 +24,7 @@ public class MarbleMachine : MonoBehaviour
 
     public event EventHandler PinPositionsChanged;
     public event EventHandler MutePositionChanged;
-
-    public float MutePosition { get { return mutePosition; }
-        set
-        {
-            mutePosition = Mathf.Clamp(value,0,1);
-            MutePositionChanged?.Invoke(this, new EventArgs());
-        }
-    }
+    
 
     void Start()
     {
