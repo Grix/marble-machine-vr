@@ -54,7 +54,9 @@ public class HandCrank : MonoBehaviour
             float angle = GetComponent<CircularDrive>().outAngle;
             //MarbleMachine.InputTorque((angle - previousAngle)*torqueRatio);
             //HelperFunctions.Log(angle, angle - previousAngle);
-            MarbleMachine.InputTorqueWithDelta(angle - previousAngle);
+            var inputSpeed = (angle - previousAngle) / Time.deltaTime;
+            //HelperFunctions.Log("handcrank", angle, previousAngle, inputSpeed);
+            MarbleMachine.InputTorqueAsSpeed(inputSpeed);
             previousAngle = angle;
         }
     }
@@ -68,6 +70,7 @@ public class HandCrank : MonoBehaviour
 
     private void HandCrank_HandDetached(object sender, EventArgs e)
     {
+        isGrabbed = false;
         if (GrabbingHandModel != null)
             GrabbingHandModel.enabled = false;
     }

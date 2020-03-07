@@ -59,11 +59,12 @@ public class MarbleMachine : MonoBehaviour
         inputTorque = Mathf.Max(deltaAngle, 10*Time.deltaTime);
     }
 
-    public void InputTorqueWithDelta(float inputDeltaSpeed)
+    public void InputTorqueAsSpeed(float inputSpeed)
     {
-        inputTorque = (inputDeltaSpeed - speed) * Time.deltaTime * 1000;
+        float multiplier = 0.1f;
+        inputTorque = (inputSpeed - (speed/Time.deltaTime / 2)) * multiplier; // why is /Time.deltaTime/2 needed?
 
-        HelperFunctions.Log(inputDeltaSpeed, speed, inputTorque);
+        HelperFunctions.Log(inputSpeed, (speed / Time.deltaTime / 2), inputTorque);
     }
 
     public void TriggerPinPositionsChangedEvent()
@@ -79,7 +80,7 @@ public class MarbleMachine : MonoBehaviour
     void UpdateWheelPosition()
     {
         var friction = frictionConstant;// * 1/Math.Log(speed+1.1);
-        var deltaSpeed = (inputTorque - (float)friction) * Time.fixedDeltaTime;
+        var deltaSpeed = (inputTorque - friction) * Time.fixedDeltaTime;
         if (flywheelIsEngaged)
         {
             //if (flywheelMoment > otherMoment*flywheelInertiaRatio)

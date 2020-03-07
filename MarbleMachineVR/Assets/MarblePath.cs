@@ -52,6 +52,9 @@ public class MarblePath : MonoBehaviour
                 FinishMarbleTransport(marble);
             else
             {
+                if (lastMarbleMachinePosition > 300 && MarbleMachine.Position < 60)
+                    lastMarbleMachinePosition -= 360;
+
                 float lastYPosition = marble.Marble.transform.position.y;
                 marble.Marble.transform.position = Path.GetPoint(marble.Position);
                 if (IsTiedToMarbleMachineSpeed)
